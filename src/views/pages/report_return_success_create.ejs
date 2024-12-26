@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Báo Cáo Trả Sách</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .report-content {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .report-header {
+            border-bottom: 2px solid #eee;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .info-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            width: 200px;
+        }
+        .info-table td {
+            padding: 12px;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .stats-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+        }
+        .stats-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .stats-table tr:hover {
+            background: #f8f9fa;
+        }
+        .print-btn {
+            margin-top: 2rem;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .print-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-bar"></i> Báo Cáo Trả Sách</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="report-content">
+            <div class="report-header">
+                <h2>Báo Cáo Trả Sách - Tháng <%= report.Month %>/<%= report.Year %></h2>
+                <p class="report-id">Mã báo cáo: <%= report.ReportID %></p>
+            </div>
+
+            <div class="stats-section">
+                <h3><i class="fas fa-list"></i> Chi Tiết Sách Trả</h3>
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên Sách</th>
+                            <th>Ngày Mượn</th>
+                            <th>Số Ngày Trễ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% report.ReturnDetails.forEach((detail, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><%= detail.BookName %></td>
+                                <td><%= new Date(detail.BorrowDate).toLocaleDateString('vi-VN') %></td>
+                                <td><%= detail.DueDays %> ngày</td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">Tổng số sách:</th>
+                            <td colspan="2"><%= report.TotalBooks %> cuốn</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="window.print()" class="print-btn">
+                    <i class="fas fa-print"></i> In Báo Cáo
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

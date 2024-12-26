@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thêm Sách Thành Công</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-check-circle"></i> Thêm Sách Thành Công</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="success-content">
+            <table class="book-info">
+                <tr>
+                    <th>Tên Sách:</th>
+                    <td><%= book.Name %></td>
+                </tr>
+                <tr>
+                    <th>Thể Loại:</th>
+                    <td>Loại <%= book.Type %></td>
+                </tr>
+                <tr>
+                    <th>Tác Giả:</th>
+                    <td><%= book.Author.FullName %></td>
+                </tr>
+                <tr>
+                    <th>Năm Xuất Bản:</th>
+                    <td><%= book.YearPublish %></td>
+                </tr>
+                <tr>
+                    <th>Nhà Xuất Bản:</th>
+                    <td><%= book.Publisher %></td>
+                </tr>
+                <tr>
+                    <th>Giá:</th>
+                    <td><%= book.Price.toLocaleString('vi-VN') %> VNĐ</td>
+                </tr>
+                <tr>
+                    <th>Trạng Thái:</th>
+                    <td>
+                        <% if (book.Status === 1) { %>
+                            <span class="status-available">Có sẵn</span>
+                        <% } else { %>
+                            <span class="status-unavailable">Không có sẵn</span>
+                        <% } %>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="action-buttons">
+                <a href="/book/new" class="btn"><i class="fas fa-plus"></i> Thêm Sách Mới</a>
+                <a href="/book" class="btn"><i class="fas fa-list"></i> Danh Sách Sách</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

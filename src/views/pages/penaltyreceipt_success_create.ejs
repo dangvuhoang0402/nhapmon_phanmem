@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Biên Lai Thu Phạt Thành Công</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-check-circle"></i> Tạo Biên Lai Thu Phạt Thành Công</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="success-content">
+            <div class="receipt-info">
+                <h3>Thông Tin Biên Lai</h3>
+                <table class="info-table">
+                    <tr>
+                        <th>Mã Biên Lai:</th>
+                        <td><%= penaltyReceipt.ReceiptID %></td>
+                    </tr>
+                    <tr>
+                        <th>Độc Giả:</th>
+                        <td><%= penaltyReceipt.Reader.ReaderID %> - <%= penaltyReceipt.Reader.FullName %></td>
+                    </tr>
+                    <tr>
+                        <th>Số Tiền Thu:</th>
+                        <td><%= penaltyReceipt.AmountPaid.toLocaleString('vi-VN') %> VNĐ</td>
+                    </tr>
+                    <tr>
+                        <th>Ngày Thu:</th>
+                        <td><%= new Date(penaltyReceipt.PaymentDate).toLocaleDateString('vi-VN') %></td>
+                    </tr>
+                    <tr>
+                        <th>Ghi Chú:</th>
+                        <td><%= penaltyReceipt.Notes || 'Không có' %></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/penalty-receipt/new" class="btn">
+                    <i class="fas fa-plus"></i> Tạo Biên Lai Mới
+                </a>
+                <a href="/penalty-receipt" class="btn">
+                    <i class="fas fa-list"></i> Danh Sách Biên Lai
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

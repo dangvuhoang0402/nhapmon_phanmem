@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Báo Cáo Thống Kê Mượn Sách</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .report-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .date-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .submit-btn {
+            padding: 1rem 2rem;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .preview-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-bar"></i> Báo Cáo Thống Kê Mượn Sách</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="report-section">
+            <form action="/report-book-borrow" method="POST" class="search-form">
+                <div class="date-selection">
+                    <div class="form-group">
+                        <label>Tháng:</label>
+                        <select name="Month" required>
+                            <% for(let i = 1; i <= 12; i++) { %>
+                                <option value="<%= i %>" <%= new Date().getMonth() + 1 === i ? 'selected' : '' %>>
+                                    Tháng <%= i %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Năm:</label>
+                        <select name="Year" required>
+                            <% for(let i = 2020; i <= new Date().getFullYear(); i++) { %>
+                                <option value="<%= i %>" <%= new Date().getFullYear() === i ? 'selected' : '' %>>
+                                    <%= i %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-chart-line"></i>
+                        Tạo Báo Cáo Thống Kê
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

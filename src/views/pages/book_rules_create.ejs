@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản Lý Qui Định Sách</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book-open"></i> Quản Lý Qui Định Sách</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <form action="/rules/book" method="POST" class="rules-form" onsubmit="return validateForm()">
+            <div class="form-section">
+                <h3>QĐ2: Qui Định Về Sách</h3>
+
+                <div class="form-group">
+                    <label>Các Thể Loại Sách *</label>
+                    <div id="bookTypesContainer" class="book-types-container">
+                        <% rules.BookRules.BookTypes.forEach(type => { %>
+                            <div class="book-type-item">
+                                <input type="text" 
+                                       name="BookTypes" 
+                                       value="<%= type %>"
+                                       required>
+                                <button type="button" class="remove-type-btn" onclick="removeBookType(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        <% }); %>
+                    </div>
+                    <button type="button" class="add-type-btn" onclick="addBookType()">
+                        <i class="fas fa-plus"></i> Thêm Thể Loại
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxYearDiff">Khoảng Cách Năm Xuất Bản Tối Đa (Năm) *</label>
+                    <input type="number" 
+                           id="maxYearDiff" 
+                           name="MaxPublishYearDiff" 
+                           value="<%= rules.BookRules.MaxPublishYearDiff %>"
+                           min="1"
+                           required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Lưu Qui Định
+                    </button>
+                    <button type="reset" class="reset-btn">
+                        <i class="fas fa-undo"></i> Đặt Lại
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        .book-types-container {
+            margin-bottom: 1rem;
+        }
+        .book-type-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .remove-type-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .add-type-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .submit-btn, .reset-btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            margin: 0 5px;
+        }
+        .submit-btn {
+            background: #007bff;
+            color: white;
+        }
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+
+    <script>
+        function addBookType() {
+            const container = document.getElementById('bookTypesContainer');
+            const typeCount = container.children.length;
+            
+            if (typeCount >= 10) {
+                alert('Không thể thêm quá 10 thể loại sách');
+                return;
+            }
+
+            const typeItem = document.createElement('div');
+            typeItem.className = 'book-type-item';
+            typeItem.innerHTML = `
+                <input type="text" name="BookTypes" required>
+                <button type="button" class="remove-type-btn" onclick="removeBookType(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(typeItem);
+        }
+
+        function removeBookType(button) {
+            const container = document.getElementById('bookTypesContainer');
+            if (container.children.length <= 1) {
+                alert('Phải có ít nhất một thể loại sách');
+                return;
+            }
+            button.parentElement.remove();
+        }
+
+        function validateForm() {
+            const types = document.getElementsByName('BookTypes');
+            const typeValues = Array.from(types).map(input => input.value.trim());
+            
+            if (typeValues.some(type => type === '')) {
+                alert('Tên thể loại không được để trống');
+                return false;
+            }
+
+            if (new Set(typeValues).size !== typeValues.length) {
+                alert('Tên thể loại không được trùng nhau');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

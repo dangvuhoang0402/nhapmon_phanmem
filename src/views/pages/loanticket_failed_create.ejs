@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lỗi Tạo Phiếu Mượn</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-exclamation-circle"></i> Lỗi Tạo Phiếu Mượn</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="error-content">
+            <div class="error-message">
+                <i class="fas fa-times-circle"></i>
+                <p><%= error.message %></p>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/loan-ticket/new" class="btn"><i class="fas fa-redo"></i> Thử Lại</a>
+                <a href="/loan-ticket" class="btn"><i class="fas fa-list"></i> Danh Sách Phiếu Mượn</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

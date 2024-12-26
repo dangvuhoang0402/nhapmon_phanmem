@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tạo Phiếu Mượn Sách</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+        .book-row {
+            position: relative;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .add-book-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .remove-book-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .date-display {
+            display: block;
+            margin-top: 0.5rem;
+            color: #6c757d;
+            font-style: italic;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .submit-btn, .reset-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+        }
+        .submit-btn {
+            background: #007bff;
+            color: white;
+        }
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+        }
+        option:disabled {
+            color: #dc3545;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book-reader"></i> Tạo Phiếu Mượn Sách</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <form action="/loan-ticket" method="POST" class="loan-form" onsubmit="return validateForm()">
+            <div class="form-section">
+                <h3><i class="fas fa-user"></i> Thông Tin Độc Giả</h3>
+                <div class="form-group">
+                    <label for="reader">Độc Giả *</label>
+                    <select id="reader" name="Reader" required>
+                        <option value="">Chọn độc giả</option>
+                        <% readers.forEach(function(reader) { %>
+                            <option value="<%= reader._id %>">
+                                <%= reader.ReaderID %> - <%= reader.FullName %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3><i class="fas fa-books"></i> Thông Tin Sách Mượn</h3>
+                <div id="book-selections">
+                    <div class="book-row">
+                        <div class="form-group">
+                            <label>Sách *</label>
+                            <select name="Books[]" required class="book-select">
+                                <option value="">Chọn sách</option>
+                                <% books.forEach(function(book) { %>
+                                    <option value="<%= book._id %>" <%= book.Status === 0 ? 'disabled' : '' %>>
+                                        <%= book.BookID %> - <%= book.Name %>
+                                        <%= book.Status === 0 ? '(Đã được mượn)' : '' %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" onclick="addBookSelection()" class="add-book-btn">
+                    <i class="fas fa-plus"></i> Thêm Sách
+                </button>
+            </div>
+
+            <div class="form-section">
+                <h3><i class="fas fa-calendar-alt"></i> Thông Tin Thời Gian</h3>
+                <div class="form-group">
+                    <label for="startDate">Ngày Mượn *</label>
+                    <input type="date" id="startDate" name="StartDate" required 
+                           value="<%= new Date().toISOString().split('T')[0] %>" readonly>
+                </div>
+            
+                <div class="form-group">
+                    <label for="loanDays">Số Ngày Mượn *</label>
+                    <input type="number" 
+                           id="loanDays" 
+                           name="LoanDays" 
+                           required 
+                           min="1"
+                           onchange="calculateDueDate(this)">
+                    <span id="dueDateDisplay" class="date-display"></span>
+                    <input type="hidden" id="dueDate" name="DueDate">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Tạo Phiếu
+                </button>
+                <button type="reset" class="reset-btn">
+                    <i class="fas fa-undo"></i> Làm Mới
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    function calculateDueDate(input) {
+        const days = parseInt(input.value);
+        const startDate = new Date(document.getElementById('startDate').value);
+        const dueDate = new Date(startDate);
+        dueDate.setDate(startDate.getDate() + days);
+        
+        document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+        document.getElementById('dueDateDisplay').textContent = 
+            `Ngày hẹn trả: ${dueDate.toLocaleDateString('vi-VN')}`;
+    }
+
+    function addBookSelection() {
+        const bookSelections = document.getElementById('book-selections');
+        const bookRow = bookSelections.children[0].cloneNode(true);
+        const select = bookRow.querySelector('select');
+        select.value = '';
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-book-btn';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.onclick = function() {
+            bookSelections.removeChild(bookRow);
+        };
+        
+        bookRow.appendChild(removeBtn);
+        bookSelections.appendChild(bookRow);
+    }
+
+    function validateForm() {
+        const bookSelects = document.querySelectorAll('.book-select');
+        const selectedBooks = new Set();
+        
+        for (let select of bookSelects) {
+            if (select.value && selectedBooks.has(select.value)) {
+                alert('Không thể mượn cùng một cuốn sách!');
+                return false;
+            }
+            if (select.value) {
+                selectedBooks.add(select.value);
+            }
+        }
+        
+        return true;
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cập Nhật Qui Định Sách Thành Công</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .success-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        .book-type {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 0 5px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            color: #2c3e50;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .btn, .print-btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-check-circle"></i> Cập Nhật Qui Định Sách Thành Công</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="success-content">
+            <div class="rules-info">
+                <h3>QĐ2: Qui Định Về Sách</h3>
+                <table class="info-table">
+                    <tr>
+                        <th>Các Thể Loại:</th>
+                        <td>
+                            <% rules.BookRules.BookTypes.forEach(type => { %>
+                                <span class="book-type">
+                                    <i class="fas fa-bookmark"></i> Loại <%= type %>
+                                </span>
+                            <% }); %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Khoảng Cách Năm Xuất Bản Tối Đa:</th>
+                        <td><%= rules.BookRules.MaxPublishYearDiff %> năm</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/rules/book" class="btn">
+                    <i class="fas fa-edit"></i> Tiếp Tục Chỉnh Sửa
+                </a>
+                <button onclick="window.print()" class="print-btn">
+                    <i class="fas fa-print"></i> In Qui Định
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

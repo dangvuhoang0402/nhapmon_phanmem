@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chi Tiết Sách</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-book"></i> Chi Tiết Sách</h1>
+            <div class="header-actions">
+                <a href="/book" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Danh Sách</a>
+            </div>
+        </div>
+
+        <div class="book-detail">
+            <table class="detail-table">
+                <tr>
+                    <th>Tên Sách:</th>
+                    <td><%= book.Name %></td>
+                </tr>
+                <tr>
+                    <th>Thể Loại:</th>
+                    <td>Loại <%= book.Type %></td>
+                </tr>
+                <tr>
+                    <th>Tác Giả:</th>
+                    <td><%= book.Author.FullName %></td>
+                </tr>
+                <tr>
+                    <th>Năm Xuất Bản:</th>
+                    <td><%= book.YearPublish %></td>
+                </tr>
+                <tr>
+                    <th>Nhà Xuất Bản:</th>
+                    <td><%= book.Publisher %></td>
+                </tr>
+                <tr>
+                    <th>Ngày Nhập:</th>
+                    <td><%= new Date(book.DateIn).toLocaleDateString('vi-VN') %></td>
+                </tr>
+                <tr>
+                    <th>Giá:</th>
+                    <td><%= book.Price.toLocaleString('vi-VN') %> VNĐ</td>
+                </tr>
+                <tr>
+                    <th>Trạng Thái:</th>
+                    <td>
+                        <% if (book.Status === 1) { %>
+                            <span class="status-available">Có sẵn</span>
+                        <% } else { %>
+                            <span class="status-unavailable">Không có sẵn</span>
+                        <% } %>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="action-buttons">
+                <a href="/book/<%= book._id %>/edit" class="btn btn-edit"><i class="fas fa-edit"></i> Chỉnh Sửa</a>
+                <button onclick="deleteBook('<%= book._id %>')" class="btn btn-delete"><i class="fas fa-trash"></i> Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function deleteBook(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa sách này?')) {
+            fetch(`/book/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 200) {
+                        window.location.href = '/book';
+                    }
+                });
+        }
+    }
+    </script>
+</body>
+</html>

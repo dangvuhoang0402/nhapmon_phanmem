@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản Lý Qui Định Độc Giả</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-cog"></i> Quản Lý Qui Định Độc Giả</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <form action="/rules/reader" method="POST" class="rules-form" onsubmit="return validateForm()">
+            <div class="form-section">
+                <h3>QĐ1: Qui Định Về Độc Giả</h3>
+
+                <div class="form-group">
+                    <label for="minAge">Tuổi Tối Thiểu *</label>
+                    <input type="number" 
+                           id="minAge" 
+                           name="MinAge" 
+                           value="<%= rules.ReaderRules.MinAge %>"
+                           min="1"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cardValidity">Thời Hạn Thẻ (Tháng) *</label>
+                    <input type="number" 
+                           id="cardValidity" 
+                           name="CardValidityMonths" 
+                           value="<%= rules.ReaderRules.CardValidityMonths %>"
+                           min="1"
+                           required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Lưu Qui Định
+                    </button>
+                    <button type="reset" class="reset-btn">
+                        <i class="fas fa-undo"></i> Đặt Lại
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    function validateForm() {
+        const minAge = parseInt(document.getElementById('minAge').value);
+        const cardValidity = parseInt(document.getElementById('cardValidity').value);
+
+        if (minAge < 1) {
+            alert('Tuổi tối thiểu phải lớn hơn 0');
+            return false;
+        }
+
+        if (cardValidity < 1) {
+            alert('Thời hạn thẻ phải lớn hơn 0 tháng');
+            return false;
+        }
+
+        return true;
+    }
+    </script>
+</body>
+</html>

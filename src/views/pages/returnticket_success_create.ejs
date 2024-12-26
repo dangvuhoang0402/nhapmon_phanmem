@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tạo Phiếu Trả Thành Công</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-check-circle"></i> Tạo Phiếu Trả Thành Công</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="success-content">
+            <div class="ticket-info">
+                <h3>Thông Tin Phiếu Trả</h3>
+                <table class="info-table">
+                    <tr>
+                        <th>Mã Phiếu Trả:</th>
+                        <td><%= returnTicket.ReturnTicketID %></td>
+                    </tr>
+                    <tr>
+                        <th>Mã Phiếu Mượn:</th>
+                        <td><%= returnTicket.LoanTicketID.LoanTicketID %></td>
+                    </tr>
+                    <tr>
+                        <th>Độc Giả:</th>
+                        <td><%= returnTicket.LoanTicketID.Reader.ReaderID %> - <%= returnTicket.LoanTicketID.Reader.FullName %></td>
+                    </tr>
+                    <tr>
+                        <th>Tiền Phạt Tồn:</th>
+                        <td><%= returnTicket.LoanTicketID.Reader.PendingPenalty.toLocaleString('vi-VN') %> VNĐ</td>
+                    </tr>
+                    <tr>
+                        <th>Ngày Trả:</th>
+                        <td><%= new Date(returnTicket.ReturnDate).toLocaleDateString('vi-VN') %></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="books-section">
+                <h3>Sách Đã Trả</h3>
+                <table class="books-table">
+                    <thead>
+                        <tr>
+                            <th>Mã Sách</th>
+                            <th>Tên Sách</th>
+                            <th>Tiền Phạt</th>
+                            <th>Ghi Chú</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% returnTicket.BookDetails.forEach(function(detail) { %>
+                            <tr>
+                                <td><%= detail.Book.BookID %></td>
+                                <td><%= detail.Book.Name %></td>
+                                <td><%= detail.Penalty.toLocaleString('vi-VN') %> VNĐ</td>
+                                <td><%= detail.Notes %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">Tổng Tiền Phạt:</th>
+                            <td colspan="2"><%= returnTicket.TotalPenalty.toLocaleString('vi-VN') %> VNĐ</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/return-ticket/new" class="btn">
+                    <i class="fas fa-plus"></i> Tạo Phiếu Mới
+                </a>
+                <a href="/return-ticket" class="btn">
+                    <i class="fas fa-list"></i> Danh Sách Phiếu Trả
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

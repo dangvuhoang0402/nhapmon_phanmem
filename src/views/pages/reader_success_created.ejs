@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tạo Thẻ Độc Giả Thành Công</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .success-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        .success-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #28a745;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 2rem 0;
+        }
+        .info-table th {
+            width: 200px;
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+        .info-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .reader-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #e9ecef;
+            color: #2c3e50;
+        }
+        .validity-info {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #fff3cd;
+            border-radius: 4px;
+            color: #856404;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-new {
+            background: #28a745;
+        }
+        .btn-list {
+            background: #007bff;
+        }
+        .btn-print {
+            background: #6c757d;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-check-circle"></i> Tạo Thẻ Độc Giả Thành Công</h1>
+            <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
+        </div>
+
+        <div class="success-content">
+            <div class="success-header">
+                <i class="fas fa-check-circle fa-3x"></i>
+                <h2>Thẻ Độc Giả Đã Được Tạo</h2>
+            </div>
+
+            <table class="info-table">
+                <tr>
+                    <th>Họ và Tên:</th>
+                    <td><%= reader.FullName %></td>
+                </tr>
+                <tr>
+                    <th>Ngày Sinh:</th>
+                    <td><%= new Date(reader.DayOfBirth).toLocaleDateString('vi-VN') %></td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td><%= reader.Email || 'Chưa cung cấp' %></td>
+                </tr>
+                <tr>
+                    <th>Địa Chỉ:</th>
+                    <td><%= reader.Address %></td>
+                </tr>
+                <tr>
+                    <th>Loại Độc Giả:</th>
+                    <td><span class="reader-type">Loại <%= reader.Type %></span></td>
+                </tr>
+                <tr>
+                    <th>Ngày Tạo:</th>
+                    <td><%= new Date(reader.Date).toLocaleDateString('vi-VN') %></td>
+                </tr>
+            </table>
+
+            <div class="validity-info">
+                <i class="fas fa-info-circle"></i>
+                Thẻ có giá trị trong <%= rules.ReaderRules.CardValidityMonths %> tháng kể từ ngày tạo
+            </div>
+
+            <div class="action-buttons">
+                <a href="/reader/new" class="btn btn-new">
+                    <i class="fas fa-plus"></i> Tạo Thẻ Mới
+                </a>
+                <a href="/reader" class="btn btn-list">
+                    <i class="fas fa-list"></i> Danh Sách Độc Giả
+                </a>
+                <button onclick="window.print()" class="btn btn-print">
+                    <i class="fas fa-print"></i> In Thẻ
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
