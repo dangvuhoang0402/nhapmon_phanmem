@@ -7,7 +7,7 @@ const authorized = (req, res, next) => {
 
     const roleUrl = {
         'reader': {
-            'GET': ['/book', '/book/:id', '/author', '/author/:id'],
+            'GET': ['/book', '/book/:id'],
             'POST': [],
             'PUT': [],
             'DELETE': []
