@@ -7,7 +7,7 @@ const createPenaltyReceipt = async (penaltyReceiptData) => {
 }
 
 const getPenaltyReceipts = async () => {
-    const allPenaltyReceipts = await PenaltyReceipt.find().populate('loanTicket');
+    const allPenaltyReceipts = await PenaltyReceipt.find().populate('Reader');
     return allPenaltyReceipts;
 }
 

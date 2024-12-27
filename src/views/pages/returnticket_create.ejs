@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tạo Phiếu Trả</title>
+    <title>Tạo Phiếu Trả Sách</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -43,8 +43,8 @@
             border-radius: 4px;
             margin-bottom: 1rem;
             display: flex;
-            align-items: center;
-            gap: 1rem;
+            justify-content: space-between;
+            align-items: flex-start;
             background: #f8f9fa;
         }
         .book-info {
@@ -53,17 +53,37 @@
         .book-title {
             font-weight: 500;
             color: #2c3e50;
+            margin-bottom: 0.5rem;
         }
         .book-meta {
-            font-size: 0.9em;
             color: #6c757d;
+            font-size: 0.9em;
+            margin-bottom: 0.5rem;
+        }
+        .penalty-info {
+            color: #dc3545;
+            font-weight: 500;
             margin-top: 0.5rem;
+        }
+        .book-notes {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .total-penalty {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border-radius: 4px;
+            font-weight: 500;
+            color: #856404;
         }
         .form-actions {
             display: flex;
             gap: 1rem;
             justify-content: flex-end;
-            margin-top: 2rem;
         }
         .submit-btn, .reset-btn {
             padding: 0.8rem 1.5rem;
@@ -85,10 +105,6 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .due-date {
-            color: #dc3545;
-            font-weight: 500;
-        }
     </style>
 </head>
 <body>
@@ -98,7 +114,7 @@
             <a href="/home" class="back-btn"><i class="fas fa-arrow-left"></i> Trở về Trang Chủ</a>
         </div>
 
-        <form action="/return-ticket" method="POST" class="create-form">
+        <form action="/return-ticket" method="POST" class="create-form" onsubmit="return validateForm()">
             <div class="form-section">
                 <h3><i class="fas fa-file-alt"></i> Thông Tin Phiếu Mượn</h3>
                 <div class="form-group">
@@ -123,6 +139,7 @@
             <div id="bookDetails" class="form-section" style="display: none;">
                 <h3><i class="fas fa-books"></i> Danh Sách Sách Trả</h3>
                 <div id="booksList"></div>
+                <div id="totalPenalty" class="total-penalty"></div>
             </div>
 
             <div class="form-actions">
@@ -137,46 +154,79 @@
     </div>
 
     <script>
-        function handleLoanTicketChange(select) {
-            const bookDetails = document.getElementById('bookDetails');
-            const booksList = document.getElementById('booksList');
+    function calculatePenalty(dueDate) {
+        const today = new Date();
+        const due = new Date(dueDate);
+        const diffDays = Math.max(0, Math.floor((today - due) / (1000 * 60 * 60 * 24)));
+        return diffDays * 1000;
+    }
+
+    function handleLoanTicketChange(select) {
+        const bookDetails = document.getElementById('bookDetails');
+        const booksList = document.getElementById('booksList');
+        const totalPenaltyDiv = document.getElementById('totalPenalty');
+        
+        if (select.value) {
+            const option = select.selectedOptions[0];
+            const books = JSON.parse(option.dataset.books);
+            const dueDate = new Date(option.dataset.dueDate);
+            let totalPenalty = 0;
             
-            if (select.value) {
-                const option = select.selectedOptions[0];
-                const books = JSON.parse(option.dataset.books);
-                const dueDate = new Date(option.dataset.dueDate);
+            booksList.innerHTML = books.map(book => {
+                const penalty = calculatePenalty(dueDate);
+                totalPenalty += penalty;
                 
-                booksList.innerHTML = books.map(book => `
+                return `
                     <div class="book-item">
                         <div class="book-info">
                             <div class="book-title">${book.Name}</div>
                             <div class="book-meta">
                                 Mã sách: ${book.BookID}<br>
-                                Hạn trả: <span class="due-date">
-                                    ${dueDate.toLocaleDateString('vi-VN')}
-                                </span>
+                                Hạn trả: ${dueDate.toLocaleDateString('vi-VN')}
                             </div>
+                            ${penalty > 0 ? `
+                                <div class="penalty-info">
+                                    Tiền phạt: ${penalty.toLocaleString('vi-VN')} VNĐ
+                                </div>
+                            ` : ''}
+                            <textarea class="book-notes" 
+                                    name="BookDetails[${book._id}][Notes]" 
+                                    placeholder="Ghi chú về tình trạng sách..."></textarea>
+                            <input type="hidden" 
+                                   name="BookDetails[${book._id}][Penalty]" 
+                                   value="${penalty}">
+                            <input type="hidden" 
+                                   name="BookDetails[${book._id}][Book]" 
+                                   value="${book._id}">
                         </div>
-                        <input type="checkbox" name="ReturnedBooks[]" 
+                        <input type="checkbox" 
+                               name="ReturnedBooks[]" 
                                value="${book._id}">
                     </div>
-                `).join('');
-                
-                bookDetails.style.display = 'block';
-            } else {
-                bookDetails.style.display = 'none';
-                booksList.innerHTML = '';
-            }
+                `;
+            }).join('');
+            
+            totalPenaltyDiv.innerHTML = `
+                Tổng tiền phạt: ${totalPenalty.toLocaleString('vi-VN')} VNĐ
+                <input type="hidden" name="TotalPenalty" value="${totalPenalty}">
+            `;
+            
+            bookDetails.style.display = 'block';
+        } else {
+            bookDetails.style.display = 'none';
+            booksList.innerHTML = '';
+            totalPenaltyDiv.innerHTML = '';
         }
-        
-        function validateForm() {
-            const checkedBooks = document.querySelectorAll('input[name="ReturnedBooks[]"]:checked');
-            if (checkedBooks.length === 0) {
-                alert('Vui lòng chọn ít nhất một cuốn sách để trả');
-                return false;
-            }
-            return true;
+    }
+
+    function validateForm() {
+        const checkedBooks = document.querySelectorAll('input[name="ReturnedBooks[]"]:checked');
+        if (checkedBooks.length === 0) {
+            alert('Vui lòng chọn ít nhất một cuốn sách để trả');
+            return false;
         }
-        </script>
+        return true;
+    }
+    </script>
 </body>
 </html>

@@ -9,6 +9,8 @@ const getAllReaders = async (req, res, next) => {
         message: 'Success',
         data: readers 
     };
+    const rules = await Rule.findOne().populate('ReaderRules');
+    res.render('pages/reader_list', { readers: readers  , rules: rules });
     next();
 }
 

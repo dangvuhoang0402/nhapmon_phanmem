@@ -9,6 +9,7 @@ const getAllPenaltyReceipts = async (req, res, next) => {
         message: 'Success',
         data: penaltyReceipts 
     };
+    res.render('pages/penaltyreceipt_list', { penaltyReceipts });
     next();
 }
 

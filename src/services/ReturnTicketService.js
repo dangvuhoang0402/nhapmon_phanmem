@@ -10,58 +10,59 @@ const createReturnTicket = async (returnTicketData) => {
     const lastNumber = lastReturnTicket 
         ? parseInt(lastReturnTicket.ReturnTicketID.replace('RT', '')) 
         : 0;
-    const ReturnTicketID = `RT${lastNumber + 1}`;
+    const ReturnTicketID = `RT${(lastNumber + 1).toString().padStart(5, '0')}`;
 
-    // Get loan ticket and its books
+    // Get loan ticket and validate
     const loanTicket = await LoanTicketRepo.getLoanTicketById(returnTicketData.LoanTicketID);
-    
-    // Process selected books for return
-    const bookDetails = returnTicketData.BookDetails || [];
-    const selectedBooks = bookDetails
-        .filter(detail => detail && detail.Book)
-        .map(detail => ({
-            Book: detail.Book,
-            Penalty: detail.Penalty || 0,
-            Notes: detail.Notes || ''
-        }));
+    if (!loanTicket) {
+        throw new Error('Phiếu mượn không tồn tại');
+    }
 
-    // Calculate total penalty
-    const totalPenalty = selectedBooks.reduce((sum, book) => sum + (book.Penalty || 0), 0);
+    // Process returned books
+    const returnedBooks = returnTicketData.ReturnedBooks || [];
+    const bookDetails = [];
+    let totalPenalty = 0;
 
-    // Check if all books are being returned
-    const isFullReturn = selectedBooks.length === loanTicket.Books.length;
+    // Create book details array and calculate penalties
+    for (const bookId of returnedBooks) {
+        const bookData = returnTicketData.BookDetails[bookId];
+        if (bookData) {
+            bookDetails.push({
+                Book: bookId,
+                Penalty: Number(bookData.Penalty) || 0,
+                Notes: bookData.Notes || ''
+            });
+            totalPenalty += Number(bookData.Penalty) || 0;
+        }
+    }
 
     // Create return ticket
-    const newReturnTicket = await ReturnTicketRepo.createReturnTicket({
+    const returnTicket = {
         ReturnTicketID,
         LoanTicketID: returnTicketData.LoanTicketID,
-        BookDetails: selectedBooks,
-        ReturnDate: returnTicketData.ReturnDate || new Date(),
+        BookDetails: bookDetails,
+        ReturnDate: new Date(),
         TotalPenalty: totalPenalty
-    });
+    };
 
-    // Update loan ticket status if all books returned
-    if (isFullReturn) {
-        await LoanTicketRepo.updateLoanTicketStatus(returnTicketData.LoanTicketID, 0);
-    } else {
-        // Remove returned books from loan ticket
-        const remainingBooks = loanTicket.Books.filter(book => 
-            !selectedBooks.some(selected => selected.Book.toString() === book._id.toString())
-        );
-        await LoanTicketRepo.updateLoanTicketBooks(returnTicketData.LoanTicketID, remainingBooks);
-    }
+    // Save return ticket
+    const savedReturnTicket = await ReturnTicketRepo.createReturnTicket(returnTicket);
 
-    // Update book statuses
-    for (const detail of selectedBooks) {
+    // Update book statuses to available
+    for (const detail of bookDetails) {
         await BookRepo.updateBookStatus(detail.Book, 1);
     }
-    const reader = loanTicket.Reader;
-    await ReaderRepo.updateReaderPenalty(reader, totalPenalty);
-    return newReturnTicket;
+
+    // Update reader's pending penalty
+    if (totalPenalty > 0) {
+        await ReaderRepo.updateReaderPenalty(loanTicket.Reader, totalPenalty);
+    }
+
+    return savedReturnTicket;
 };
 
 const getAllReturnTickets = async () => {
-    const returnTickets = await ReturnTicketRepo.getAllReturnTickets();
+    const returnTickets = await ReturnTicketRepo.getReturnTickets();
     return returnTickets;
 }
 

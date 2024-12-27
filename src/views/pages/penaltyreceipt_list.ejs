@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh Sách Biên Lai Thu Phạt</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .penalty-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-collapse: collapse;
+        }
+        .penalty-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            color: #2c3e50;
+        }
+        .penalty-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .amount {
+            color: #28a745;
+            font-weight: 500;
+        }
+        .notes {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+        .view-btn { background: #007bff; }
+        .delete-btn { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-money-bill"></i> Danh Sách Biên Lai Thu Phạt</h1>
+            <a href="/home" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Trở về Trang Chủ
+            </a>
+        </div>
+
+        <div class="filters">
+            <input type="text" class="search-input" id="searchPenalty" 
+                   placeholder="Tìm kiếm theo mã biên lai, tên độc giả...">
+        </div>
+
+        <table class="penalty-table">
+            <thead>
+                <tr>
+                    <th>Mã Biên Lai</th>
+                    <th>Độc Giả</th>
+                    <th>Số Tiền Thu</th>
+                    <th>Ngày Thu</th>
+                    <th>Ghi Chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% penaltyReceipts.forEach(function(receipt) { %>
+                    <tr>
+                        <td><%= receipt.ReceiptID %></td>
+                        <td>
+                            <%= receipt.Reader.FullName %><br>
+                            <small class="text-muted">Mã ĐG: <%= receipt.Reader.ReaderID %></small>
+                        </td>
+                        <td class="amount">
+                            <%= receipt.AmountPaid.toLocaleString('vi-VN') %> VNĐ
+                        </td>
+                        <td><%= new Date(receipt.PaymentDate).toLocaleDateString('vi-VN') %></td>
+                        <td class="notes"><%= receipt.Notes || 'Không có ghi chú' %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    function deletePenaltyReceipt(id) {
+        if (confirm('Bạn có chắc muốn xóa biên lai này?')) {
+            fetch(`/penalty-receipt/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 200) {
+                        window.location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa biên lai');
+                    }
+                });
+        }
+    }
+
+    document.getElementById('searchPenalty').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.penalty-table tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+    </script>
+</body>
+</html>

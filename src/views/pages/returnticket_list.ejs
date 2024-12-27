@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Danh Sách Phiếu Trả</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .return-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-collapse: collapse;
+        }
+        .return-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            color: #2c3e50;
+        }
+        .return-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .penalty-amount {
+            color: #dc3545;
+            font-weight: 500;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+        .view-btn { background: #007bff; }
+        .delete-btn { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-undo"></i> Danh Sách Phiếu Trả</h1>
+            <a href="/home" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Trở về Trang Chủ
+            </a>
+        </div>
+
+        <div class="filters">
+            <input type="text" 
+                   class="search-input" 
+                   id="searchReturn" 
+                   placeholder="Tìm kiếm phiếu trả...">
+        </div>
+
+        <table class="return-table">
+            <thead>
+                <tr>
+                    <th>Mã Phiếu Trả</th>
+                    <th>Mã Phiếu Mượn</th>
+                    <th>Sách Trả</th>
+                    <th>Ngày Trả</th>
+                    <th>Tiền Phạt</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% returnTickets.forEach(function(ticket) { %>
+                    <tr>
+                        <td><%= ticket.ReturnTicketID %></td>
+                        <td><%= ticket.LoanTicketID.LoanTicketID %></td>
+                        <td>
+                            <% ticket.BookDetails.forEach(function(detail) { %>
+                                <%= detail.Book.Name %><br>
+                                <small class="text-muted">
+                                    <%= detail.Notes ? `Ghi chú: ${detail.Notes}` : '' %>
+                                </small>
+                            <% }); %>
+                        </td>
+                        <td><%= new Date(ticket.ReturnDate).toLocaleDateString('vi-VN') %></td>
+                        <td class="penalty-amount">
+                            <%= ticket.TotalPenalty.toLocaleString('vi-VN') %> VNĐ
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    function deleteReturnTicket(id) {
+        if (confirm('Bạn có chắc muốn xóa phiếu trả này?')) {
+            fetch(`/return-ticket/${id}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 200) {
+                        window.location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa phiếu trả');
+                    }
+                });
+        }
+    }
+
+    document.getElementById('searchReturn').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.return-table tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+    </script>
+</body>
+</html>

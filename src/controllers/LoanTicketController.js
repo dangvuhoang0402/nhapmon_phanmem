@@ -10,6 +10,7 @@ const getAllLoanTickets = async (req, res, next) => {
         message: 'Success',
         data: loanTickets 
     };
+    res.render('pages/loanticket_list', {loanTickets });
     next();
 }
 

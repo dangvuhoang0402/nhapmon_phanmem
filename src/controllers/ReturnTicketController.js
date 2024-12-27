@@ -9,6 +9,7 @@ const getAllReturnTickets = async (req, res, next) => {
         message: 'Success',
         data: returnTickets 
     };
+    res.render('pages/returnticket_list', { returnTickets });
     next();
 }
 
