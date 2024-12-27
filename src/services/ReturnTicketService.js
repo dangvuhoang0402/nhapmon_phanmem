@@ -48,6 +48,22 @@ const createReturnTicket = async (returnTicketData) => {
     // Save return ticket
     const savedReturnTicket = await ReturnTicketRepo.createReturnTicket(returnTicket);
 
+    // Get current loan ticket books
+    const currentBooks = loanTicket.Books.map(book => book._id.toString());
+    
+    // Filter out returned books
+    const remainingBooks = currentBooks.filter(
+        bookId => !returnedBooks.includes(bookId)
+    );
+
+    // Update loan ticket books and status
+    await LoanTicketRepo.updateLoanTicketBooks(loanTicket._id, remainingBooks);
+    
+    // If all books returned, mark loan ticket as complete
+    if (remainingBooks.length === 0) {
+        await LoanTicketRepo.updateLoanTicketStatus(loanTicket._id, 0);
+    }
+
     // Update book statuses to available
     for (const detail of bookDetails) {
         await BookRepo.updateBookStatus(detail.Book, 1);

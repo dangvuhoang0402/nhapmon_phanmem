@@ -14,7 +14,7 @@ const createReturnTicket = async (returnTicketData) => {
         .populate('BookDetails.Book');
 };
 const getReturnTickets = async () => {
-    const allReturnTickets = await ReturnTicket.find().populate('loanTicket');
+    const allReturnTickets = await ReturnTicket.find().populate('LoanTicketID').populate('BookDetails.Book');
     return allReturnTickets;
 }
 

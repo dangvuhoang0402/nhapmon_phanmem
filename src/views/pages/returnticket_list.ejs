@@ -89,14 +89,20 @@
                 <% returnTickets.forEach(function(ticket) { %>
                     <tr>
                         <td><%= ticket.ReturnTicketID %></td>
-                        <td><%= ticket.LoanTicketID.LoanTicketID %></td>
                         <td>
-                            <% ticket.BookDetails.forEach(function(detail) { %>
-                                <%= detail.Book.Name %><br>
-                                <small class="text-muted">
-                                    <%= detail.Notes ? `Ghi chú: ${detail.Notes}` : '' %>
-                                </small>
-                            <% }); %>
+                            <%= ticket.LoanTicketID ? ticket.LoanTicketID.LoanTicketID : 'N/A' %>
+                        </td>
+                        <td>
+                            <% if (ticket.BookDetails && ticket.BookDetails.length > 0) { %>
+                                <% ticket.BookDetails.forEach(function(detail) { %>
+                                    <%= detail.Book ? detail.Book.Name : 'N/A' %><br>
+                                    <small class="text-muted">
+                                        <%= detail.Notes ? `Ghi chú: ${detail.Notes}` : '' %>
+                                    </small>
+                                <% }); %>
+                            <% } else { %>
+                                Không có thông tin sách
+                            <% } %>
                         </td>
                         <td><%= new Date(ticket.ReturnDate).toLocaleDateString('vi-VN') %></td>
                         <td class="penalty-amount">
