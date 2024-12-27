@@ -13,7 +13,7 @@ const getBooks = async () => {
 }
 
 const getBookById = async (id) => {
-    const book = await Book.findById(id);
+    const book = await Book.findById(id).populate('Author');
     if (!book) {
         throw new Error('Book not found');
     }
